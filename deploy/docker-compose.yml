@@ -1,0 +1,20 @@
+# Event Horizon on any Linux server (Oracle Cloud Always Free, a VPS, a home PC).
+# Caddy gets a free HTTPS certificate automatically; Telegram Mini Apps require HTTPS.
+services:
+  app:
+    build: ..
+    restart: unless-stopped
+    env_file: ../.env
+    environment:
+      DB_PATH: /data/event_horizon.db
+      PORT: "8080"
+    volumes:
+      - ./data:/data
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    command: caddy reverse-proxy --from ${DOMAIN} --to app:8080
+    volumes:
+      - ./caddy:/data
+    depends_on: [app]

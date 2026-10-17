@@ -1,0 +1,755 @@
+<title>Event Horizon</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&display=swap">
+<style>
+/* Layout: a film frame. The host black hole fills a full-bleed stage, the title sits in it like an opening credit,
+   the briefing card rides beside it as subtitles; below, one quiet lab bench for the Orbits scene. */
+:root{
+  color-scheme: dark;
+  --void:#000000;          /* the shadow itself: true black, chosen on purpose */
+  --ink:#ECE5D6;           /* starlight, warm */
+  --dim:#9C9384;           /* dust grey, biased toward the disk */
+  --hair:rgba(236,229,214,.16);
+  --ember:#E7A15E;         /* receding side of the disk */
+  --blue:#AFC8E6;          /* approaching, blueshifted side; also focus */
+  --glass:rgba(4,3,2,.66);
+  --glass-solid:#070605;
+  --f-display:"Bodoni Moda","Bodoni 72","Didot",Georgia,serif;
+  --f-text:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --gl:max(16px, env(safe-area-inset-left, 0px));
+  --gr:max(16px, env(safe-area-inset-right, 0px));
+}
+*{box-sizing:border-box}
+html{background:var(--void)}
+body{margin:0;background:var(--void);color:var(--ink);font-family:var(--f-text);font-size:16px;line-height:1.55;font-variation-settings:"wdth" 100;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.page{
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+  padding-block:0 56px;
+  max-width:100%;
+}
+:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+button{font:inherit;color:inherit}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- Stage ---------- */
+.stage{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,410px);grid-template-rows:auto 1fr auto;
+  gap:24px 40px;min-height:clamp(600px,88vh,860px);padding-block:28px 28px;max-width:1360px;margin-inline:auto}
+.viewport{position:absolute;top:0;bottom:0;left:calc(-1 * var(--gl));right:calc(-1 * var(--gr));overflow:hidden;z-index:0;
+  width:auto}
+@media (min-width:1361px){.viewport{left:calc(-1 * (100vw - 1360px) / 2);right:calc(-1 * (100vw - 1360px) / 2)}}
+.viewport canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.viewport::after{content:"";position:absolute;inset:auto 0 0 0;height:80px;background:linear-gradient(to bottom,transparent,var(--void));pointer-events:none}
+.masthead,.brief,.host{position:relative;z-index:1}
+.masthead{grid-column:1 / -1;grid-row:1;max-width:min(100%,760px)}
+.wordmark{margin:0;font-family:var(--f-display);font-weight:400;font-variation-settings:"opsz" 96;font-size:clamp(3rem,8.4vw,7.6rem);line-height:.86;letter-spacing:-.025em;text-wrap:balance}
+.wordmark span{display:block}
+.wordmark span + span{padding-left:.9em;font-style:italic}
+.tagline{margin:18px 0 0;max-width:34ch;color:var(--dim);font-size:1rem;font-variation-settings:"wdth" 92}
+
+.brief{grid-column:2;grid-row:2;align-self:center;background:var(--glass);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border:1px solid var(--hair);padding:22px 22px 18px;display:grid;gap:14px;min-width:0}
+.brief-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.brief-head h2{margin:0;font-family:var(--f-display);font-style:italic;font-weight:400;font-size:1.25rem;font-variation-settings:"opsz" 24}
+.count{color:var(--dim);font-size:.8125rem;font-variant-numeric:tabular-nums;font-variation-settings:"wdth" 80}
+.story-title{margin:0;font-family:var(--f-display);font-weight:500;font-variation-settings:"opsz" 48;font-size:1.75rem;line-height:1.1;text-wrap:balance}
+.story-date{margin:-6px 0 0;color:var(--ember);font-size:.8125rem;font-variation-settings:"wdth" 88;letter-spacing:.01em}
+.speech{margin:0;display:grid;font-size:.98rem;line-height:1.6;color:var(--ink)}
+.speech>span{grid-area:1/1;min-width:0}
+.speech .ghost{visibility:hidden}
+.story-src{margin:0;color:var(--dim);font-size:.75rem;font-variation-settings:"wdth" 84;line-height:1.4}
+.caret{display:inline-block;width:.5em;height:1.05em;vertical-align:-.15em;margin-left:2px;background:var(--ember);animation:blink 1s steps(2) infinite}
+.caret[hidden]{display:none}
+@keyframes blink{50%{opacity:0}}
+.facts{margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;border-top:1px solid var(--hair);padding-top:12px}
+.facts div{min-width:0}
+.facts dt{color:var(--dim);font-size:.75rem;font-variation-settings:"wdth" 82;line-height:1.3}
+.facts dd{margin:2px 0 0;font-size:.9rem;font-variant-numeric:tabular-nums;font-variation-settings:"wdth" 90;font-weight:500;line-height:1.3;overflow-wrap:anywhere}
+.controls{display:flex;align-items:center;gap:10px}
+.nav{background:none;border:1px solid var(--hair);width:40px;height:40px;display:grid;place-items:center;cursor:pointer;transition:border-color .2s}
+.nav:hover{border-color:var(--ink)}
+.nav svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.5}
+.dots{display:flex;gap:2px;flex:1;justify-content:center}
+.dot{width:30px;height:40px;background:none;border:0;cursor:pointer;display:grid;place-items:center;padding:0}
+.dot::before{content:"";width:18px;height:2px;background:var(--hair);transition:background .3s,width .3s}
+.dot[aria-current="true"]::before{background:var(--ember);width:24px}
+.skip{background:none;border:0;color:var(--dim);font-size:.8125rem;cursor:pointer;padding:6px 0;text-decoration:underline;text-underline-offset:3px;justify-self:start}
+.skip:hover{color:var(--ink)}
+
+.host{grid-column:1;grid-row:3;align-self:end;display:flex;gap:28px;flex-wrap:wrap;margin:0;font-variation-settings:"wdth" 84}
+.host div{min-width:0}
+.host dt{color:var(--dim);font-size:.75rem}
+.host dd{margin:0;font-size:.9rem;font-variant-numeric:tabular-nums}
+.host .state dd{color:var(--ember);transition:color .4s}
+.host .state.on dd{color:var(--blue)}
+
+/* ---------- Orbits ---------- */
+.lab{max-width:1360px;margin:72px auto 0;display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,300px);gap:28px 40px;align-items:start}
+.lab-intro{grid-column:1 / -1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px 40px;align-items:end;border-top:1px solid var(--hair);padding-top:28px}
+.lab-intro h2{margin:0;font-family:var(--f-display);font-weight:400;font-variation-settings:"opsz" 96;font-size:clamp(2.4rem,5.5vw,4.2rem);line-height:.95;letter-spacing:-.02em}
+.lab-intro p{margin:0;max-width:56ch;color:var(--dim)}
+.lab-intro p strong{color:var(--ink);font-weight:500}
+.bench{position:relative;min-width:0;aspect-ratio:16 / 10;max-width:100%;border:1px solid var(--hair);background:var(--void)}
+.bench canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
+.panel{display:grid;gap:18px;min-width:0}
+.readouts{margin:0;display:grid;grid-template-columns:1fr 1fr;gap:16px 18px}
+.readouts div{min-width:0;border-top:1px solid var(--hair);padding-top:8px}
+.readouts dt{color:var(--dim);font-size:.8125rem;font-variation-settings:"wdth" 84}
+.readouts dd{margin:2px 0 0;font-family:var(--f-display);font-variation-settings:"opsz" 48;font-size:1.75rem;line-height:1.1;font-variant-numeric:tabular-nums lining-nums}
+.readouts dd small{font-family:var(--f-text);font-size:.8rem;color:var(--dim);margin-left:4px}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.btn{background:none;border:1px solid var(--hair);padding:10px 16px;cursor:pointer;font-size:.9rem;font-variation-settings:"wdth" 92;transition:border-color .2s,background .2s}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--ink);color:var(--void);border-color:var(--ink)}
+.btn.primary:hover{background:var(--blue);border-color:var(--blue)}
+.legend{margin:0;padding:0;list-style:none;display:grid;gap:6px;font-size:.8125rem;color:var(--dim)}
+.legend li{display:flex;gap:10px;align-items:center}
+.legend i{flex:none;width:22px;height:0;border-top:1px dashed var(--dim)}
+.legend i.isco{border-top-color:var(--ember)}
+.legend i.hz{width:9px;height:9px;margin-inline:6px 7px;border:1px solid var(--ink);border-radius:50%;background:var(--void)}
+.say{position:absolute;left:12px;top:12px;max-width:min(320px,calc(100% - 24px));margin:0;padding:10px 14px;background:var(--glass);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid var(--hair);font-size:.875rem;line-height:1.45;pointer-events:none;transition:opacity .4s}
+.say.off{opacity:0}
+.note{margin:0;font-size:.8125rem;color:var(--dim);max-width:44ch}
+footer{max-width:1360px;margin:64px auto 0;color:var(--dim);font-size:.8125rem;border-top:1px solid var(--hair);padding-top:16px}
+footer p{margin:0;max-width:72ch}
+
+/* ---------- Narrow ---------- */
+@media (max-width:860px){
+  .stage{grid-template-columns:minmax(0,1fr);grid-template-rows:auto;min-height:0;gap:18px;padding-block:24px 8px}
+  .viewport{position:relative;inset:auto;margin-left:calc(-1 * var(--gl));margin-right:calc(-1 * var(--gr));height:min(108vw,520px);grid-row:2}
+  .masthead{grid-row:1}
+  .brief{grid-column:1;grid-row:3;margin-top:-56px}
+  .host{grid-row:4;gap:20px}
+  .lab{grid-template-columns:minmax(0,1fr);margin-top:56px}
+  .lab-intro{grid-template-columns:minmax(0,1fr)}
+  .bench{aspect-ratio:1 / 1}
+}
+@media (max-width:420px){
+  .brief{padding:18px 16px 14px}
+  .story-title{font-size:1.5rem}
+  .facts{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  .caret{animation:none}
+  *{transition-duration:.01ms!important}
+}
+</style>
+
+<main class="page">
+  <header class="stage" id="stage">
+    <div class="viewport" id="viewport"><canvas id="host" aria-hidden="true"></canvas></div>
+
+    <div class="masthead">
+      <h1 class="wordmark"><span>Event</span><span>Horizon</span></h1>
+      <p class="tagline">Astronomy explained by the one thing nothing escapes. Your host is a black hole; it does the talking.</p>
+    </div>
+
+    <section class="brief" id="brief" aria-labelledby="brief-h">
+      <div class="brief-head">
+        <h2 id="brief-h">Briefings</h2>
+        <span class="count" id="count">1 of 5</span>
+      </div>
+      <h3 class="story-title" id="story-title">The first portrait: M87*</h3>
+      <p class="story-date" id="story-date">Published 10 April 2019</p>
+      <p class="speech"><span class="ghost" id="ghost" aria-hidden="true"></span><span aria-hidden="true"><span id="typed"></span><span class="caret" id="caret"></span></span></p>
+      <p class="story-src" id="story-src"></p>
+      <p class="sr" id="speech-full" aria-live="polite"></p>
+      <button class="skip" id="skip" type="button">Show the full text</button>
+      <dl class="facts" id="facts"></dl>
+      <div class="controls">
+        <button class="nav" id="prev" type="button" aria-label="Previous briefing"><svg viewBox="0 0 16 16"><path d="M10 3 5 8l5 5"/></svg></button>
+        <div class="dots" id="dots"></div>
+        <button class="nav" id="next" type="button" aria-label="Next briefing"><svg viewBox="0 0 16 16"><path d="m6 3 5 5-5 5"/></svg></button>
+      </div>
+    </section>
+
+    <dl class="host" aria-label="About the host">
+      <div><dt>Host mass</dt><dd>10 M☉</dd></div>
+      <div><dt>Schwarzschild radius</dt><dd>29.5 km</dd></div>
+      <div><dt>Disk inner edge, 3 R<sub>s</sub></dt><dd>88.6 km</dd></div>
+      <div class="state" id="host-state"><dt>Host</dt><dd id="host-state-v">Listening</dd></div>
+    </dl>
+  </header>
+
+  <section class="lab" aria-labelledby="orbits-h">
+    <div class="lab-intro">
+      <h2 id="orbits-h">Orbits</h2>
+      <p><strong>Drag anywhere to throw a body.</strong> The length of the drag sets its speed, and a dashed line previews the path. A quick tap places it on a circular orbit. Gravity here is Newton's inverse-square law, with distances in Schwarzschild radii and speeds as a fraction of light.</p>
+    </div>
+    <div class="bench" id="bench"><canvas id="orbits" aria-label="Orbit simulator. Drag to throw a body around a black hole, or use the Add a body button."></canvas><p class="say" id="say" aria-live="polite">Three bodies are already circling me. Tap for a neat orbit, or drag to throw one.</p></div>
+    <div class="panel">
+      <dl class="readouts">
+        <div><dt>Speed of newest body</dt><dd><span id="r-speed">0.00</span><small>c</small></dd></div>
+        <div><dt>Its distance</dt><dd><span id="r-dist">0.0</span><small>R<sub>s</sub></small></dd></div>
+        <div><dt>Bodies in orbit</dt><dd id="r-count">0</dd></div>
+        <div><dt>Swallowed</dt><dd id="r-eaten">0</dd></div>
+        <div><dt>Laps completed</dt><dd id="r-laps">0</dd></div>
+        <div><dt>Speed vs escape speed</dt><dd><span id="r-esc">0.00</span><small id="r-esc-l">bound</small></dd></div>
+      </dl>
+      <div class="btns">
+        <button class="btn primary" id="add" type="button">Add a body</button>
+        <button class="btn" id="reset" type="button">Reset</button>
+      </div>
+      <ul class="legend">
+        <li><i class="hz"></i><span>Event horizon, 1 R<sub>s</sub></span></li>
+        <li><i></i><span>Photon sphere, 1.5 R<sub>s</sub></span></li>
+        <li><i class="isco"></i><span>Innermost stable orbit, 3 R<sub>s</sub></span></li>
+      </ul>
+      <p class="note">Real black holes allow no stable orbit inside 3 R<sub>s</sub>, so any body that crosses that line counts as swallowed.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Briefings draw on published results from the Event Horizon Telescope Collaboration (2019, 2022) and the LIGO Scientific and Virgo Collaborations (2016). The host is a rendering, not an image.</p>
+  </footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ================= Briefings ================= */
+var STORIES = [
+  { title:"The first portrait: M87*", date:"Published 10 April 2019",
+    text:"In April 2017, eight radio telescopes at six sites around the globe observed the core of the galaxy M87 together, working as one Earth-sized telescope: the Event Horizon Telescope. Two years later the team released the result. A ring of glowing gas surrounds a dark centre. That centre is the shadow of a black hole of about 6.5 billion solar masses, 55 million light-years away.",
+    src:"EHT Collaboration, ApJ Letters 875, L1 (2019)", facts:[["Mass","6.5 billion M☉"],["Schwarzschild radius","1.9 × 10¹⁰ km, about 128 AU"],["Distance","55 million ly"]] },
+  { title:"The one at home: Sagittarius A*", date:"Published 12 May 2022",
+    text:"The black hole at the centre of the Milky Way lies about 27,000 light-years away and holds roughly 4 million solar masses. It is more than a thousand times less massive than M87*, yet far closer, so on the sky the two rings look about the same size. Gas circles Sagittarius A* in minutes rather than days, which made it much harder to photograph.",
+    src:"EHT Collaboration, ApJ Letters 930, L12 (2022)", facts:[["Mass","≈ 4 million M☉"],["Schwarzschild radius","≈ 12 million km, 0.08 AU"],["Distance","≈ 27,000 ly"]] },
+  { title:"Two black holes collide: GW150914", date:"Detected 14 September 2015",
+    text:"Both LIGO detectors, in Hanford and Livingston, recorded the same brief chirp. It was the first direct detection of gravitational waves. Two black holes of about 36 and 29 solar masses spiralled together 1.3 billion light-years away and merged into one of about 62. Roughly 3 solar masses of energy left as gravitational waves. The work led to the 2017 Nobel Prize in Physics.",
+    src:"LIGO and Virgo Collaborations, Phys. Rev. Lett. 116, 061102 (2016)", facts:[["Before","36 + 29 M☉"],["After","62 M☉, R_s ≈ 183 km"],["Radiated","≈ 3 M☉ c²"]] },
+  { title:"Where the horizon sits", date:"Physics since 1916",
+    text:"The event horizon is the boundary where the escape speed reaches the speed of light. For a non-rotating black hole it sits at the Schwarzschild radius, Rs = 2GM/c², worked out by Karl Schwarzschild in 1916. It grows in step with mass, about 3 km for every solar mass. Squeeze the Sun inside 3 km and it becomes a black hole. Earth would have to fit inside about 9 millimetres.",
+    src:"K. Schwarzschild, Sitzungsberichte der Preussischen Akademie (1916)", facts:[["Formula","R_s = 2GM/c²"],["The Sun","2.95 km"],["Earth","≈ 9 mm"]] },
+  { title:"Why my disk is lopsided", date:"Relativistic beaming",
+    text:"Gas near a black hole orbits at a large fraction of the speed of light. On the side moving toward you its light is beamed forward and shifted bluer, so it looks brighter. The receding side dims and reddens. The same effect is the leading explanation for why the M87* ring is brightest along its southern edge. Look at my left side: that half is coming toward you.",
+    src:"EHT Collaboration, ApJ Letters 875, L5 (2019)", facts:[["Inner disk speed","≈ 0.4–0.5 c"],["Bright side","approaching"],["M87* ring","brightest to the south"]] }
+];
+
+var $ = function(id){ return document.getElementById(id); };
+var typedEl=$("typed"), ghostEl=$("ghost"), caretEl=$("caret"), fullEl=$("speech-full"), skipBtn=$("skip"), dotsEl=$("dots");
+var idx=0, typePos=0, typeTimer=0, speaking=false, voice=0;
+
+STORIES.forEach(function(s,i){
+  var b=document.createElement("button");
+  b.type="button"; b.className="dot";
+  b.setAttribute("aria-label","Briefing "+(i+1)+": "+s.title);
+  b.addEventListener("click",function(){ show(i); });
+  dotsEl.appendChild(b);
+});
+
+function setSpeaking(on){
+  speaking=on;
+  caretEl.hidden=!on;
+  skipBtn.hidden=!on;
+  $("host-state").classList.toggle("on",on);
+  $("host-state-v").textContent = on ? "Speaking" : "Listening";
+}
+function show(i){
+  idx=(i+STORIES.length)%STORIES.length;
+  var s=STORIES[idx];
+  $("story-title").textContent=s.title;
+  $("story-date").textContent=s.date;
+  $("story-src").textContent="Source: "+s.src;
+  ghostEl.textContent=s.text+"\u2007";
+  $("count").textContent=(idx+1)+" of "+STORIES.length;
+  fullEl.textContent=s.title+". "+s.text;
+  var f=$("facts"); f.innerHTML="";
+  s.facts.forEach(function(p){
+    var d=document.createElement("div"), dt=document.createElement("dt"), dd=document.createElement("dd");
+    dt.textContent=p[0]; dd.textContent=p[1].replace("R_s","Rs"); d.appendChild(dt); d.appendChild(dd); f.appendChild(d);
+  });
+  Array.prototype.forEach.call(dotsEl.children,function(b,j){ b.setAttribute("aria-current", j===idx ? "true":"false"); });
+  clearTimeout(typeTimer);
+  typePos=0; typedEl.textContent="";
+  if(reduce){ typedEl.textContent=s.text; setSpeaking(false); voice=0.6; return; }
+  setSpeaking(true);
+  typeTimer=setTimeout(tick,380);
+}
+function tick(){
+  var t=STORIES[idx].text;
+  if(document.hidden){ typeTimer=setTimeout(tick,200); return; }
+  typePos++;
+  typedEl.textContent=t.slice(0,typePos);
+  var ch=t.charAt(typePos-1);
+  if(/[aeiouy]/i.test(ch)) voice=Math.min(1.4,voice+0.22);
+  else if(/[a-z0-9]/i.test(ch)) voice=Math.min(1.4,voice+0.1);
+  if(typePos>=t.length){ setSpeaking(false); return; }
+  var d=24;
+  if(/[.!?]/.test(ch)) d=420; else if(/[,:;]/.test(ch)) d=180; else if(ch===" ") d=34;
+  typeTimer=setTimeout(tick,d);
+}
+skipBtn.addEventListener("click",function(){
+  clearTimeout(typeTimer); typedEl.textContent=STORIES[idx].text; setSpeaking(false);
+});
+$("prev").addEventListener("click",function(){ show(idx-1); });
+$("next").addEventListener("click",function(){ show(idx+1); });
+$("brief").addEventListener("keydown",function(e){
+  if(e.key==="ArrowRight"){ show(idx+1); } else if(e.key==="ArrowLeft"){ show(idx-1); }
+});
+
+/* ================= Host renderer ================= */
+var hostCanvas=$("host"), viewport=$("viewport");
+var hostW=0, hostH=0, hostDpr=1, hostCx=0, hostCy=0, hostR=60;
+var energy=0, phase=0, gulp=0, hostT=0;
+var gl=null, prog=null, U={}, ctx2=null, fallbackStars=null;
+
+var VS="attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}";
+var FS=[
+"precision highp float;",
+"uniform vec2 uRes;uniform vec2 uC;uniform float uR;uniform float uT;uniform float uPh;uniform float uE;uniform float uDpr;",
+"float h21(vec2 p){p=fract(p*vec2(233.34,851.73));p+=dot(p,p+23.45);return fract(p.x*p.y);}",
+"float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);",
+" float a=h21(i),b=h21(i+vec2(1.,0.)),c=h21(i+vec2(0.,1.)),d=h21(i+vec2(1.,1.));",
+" return mix(mix(a,b,f.x),mix(c,d,f.x),f.y);}",
+"float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*vn(p);p=p*2.03+vec2(17.1,9.2);a*=.5;}return s;}",
+"vec3 stars(vec2 q,float cell,float dens,float seed){",
+" vec2 g=q/cell;vec2 id=floor(g);vec2 f=fract(g);float h=h21(id+seed);",
+" if(h>dens)return vec3(0.);",
+" vec2 o=.2+.6*vec2(h21(id+1.3+seed),h21(id+7.7+seed));",
+" float d=length((f-o)*cell);",
+" float m=h21(id+4.1+seed);",
+" float b=exp(-d*d*1.6)*(.35+1.4*m*m)+exp(-d*.9)*.05*m;",
+" float tw=.85+.15*sin(uT*(1.+3.*m)+m*40.);",
+" vec3 tint=mix(vec3(1.,.82,.62),vec3(.78,.86,1.),h21(id+2.2+seed));",
+" return tint*b*tw;}",
+"vec3 heat(float x){x=clamp(x,0.,3.2);",
+" vec3 c=mix(vec3(.30,.05,.01),vec3(.98,.47,.13),smoothstep(0.,.6,x));",
+" c=mix(c,vec3(1.,.83,.56),smoothstep(.55,1.3,x));",
+" c=mix(c,vec3(.93,.96,1.),smoothstep(1.3,2.5,x));",
+" return c*x;}",
+"void main(){",
+" vec2 fc=gl_FragCoord.xy/uDpr;",
+" vec2 p=(fc-uC)/uR;float r=length(p);float ri=max(r,1e-3);",
+" vec3 col=vec3(0.);",
+" float tE=1.8;",
+" vec2 beta=p-p/ri*(tE*tE/ri);",
+" vec2 q=beta*uR+vec2(uT*2.2,uT*.4);",
+" if(r>1.){",
+"  col+=stars(q,26.,.11,0.)+stars(q,9.,.045,3.)*.5;",
+"  float n=fbm(q*.0035+vec2(3.,uT*.003));",
+"  col+=vec3(.11,.065,.04)*pow(n,3.)*1.8+vec3(.025,.04,.07)*pow(fbm(q*.006+5.),3.)*1.4;",
+" }",
+" float sx=p.x/ri,sy=p.y/ri;",
+" float gain=1.+.85*uE;",
+/* lensed image of the far side of the disk, wrapped over the shadow */
+" float band=smoothstep(1.02,1.08,r)*(1.-smoothstep(1.32,1.85,r));",
+" if(band>0.){",
+"  float aH=atan(p.y,p.x)-uPh*.55;",
+"  float rdH=1.2+(r-1.03)*3.6;",
+"  vec2 hc=vec2(cos(aH),sin(aH))*(1.6+rdH);",
+"  float tx=.5+.9*fbm(hc*1.4+rdH*2.);",
+"  float w=smoothstep(-.35,.6,sy)+.28;",
+"  float dop=1.-.48*sx;",
+"  float I=band*w*tx*pow(dop,2.4)*pow(1.2/rdH,1.2)*.95*gain;",
+"  vec3 hcl=heat(I);",
+"  hcl=mix(hcl,hcl*vec3(.82,.95,1.25),clamp((dop-1.)*1.5,0.,1.));",
+"  col+=hcl;",
+" }",
+" if(r<1.)col=vec3(0.);",
+/* photon ring */
+" float pr=exp(-pow((r-1.)/.013,2.))*1.15+step(1.,r)*exp(-(r-1.)/.07)*.28;",
+" col+=vec3(1.,.86,.64)*pr*(.65+.55*(1.-.45*sx))*(1.+uE*.9);",
+/* primary disk */
+" float k=.19;",
+" vec2 dp=vec2(p.x,p.y/k);float rd=length(dp);",
+" float rin=1.2,rout=4.7;",
+" float prof=smoothstep(rin,rin+.14,rd)*(1.-smoothstep(rout*.5,rout,rd))*pow(rin/max(rd,rin),1.35);",
+" if(prof>.001){",
+"  float ang=atan(dp.y,dp.x);",
+"  float a2=ang-uPh*pow(max(rd,rin),-1.5);",
+"  vec2 nc=vec2(cos(a2),sin(a2))*rd;",
+"  float tx=fbm(nc*1.7+vec2(rd*2.3));tx=.4+1.1*tx*tx;",
+"  tx*=.9+.1*sin(rd*11.+fbm(nc*.9)*6.);",
+"  float dopD=1.-.5*cos(ang)*sqrt(rin/max(rd,rin));",
+"  float I=prof*tx*pow(dopD,2.6)*1.15*gain;",
+"  vec3 dc=heat(I*1.25);",
+"  dc=mix(dc,dc*vec3(.8,.95,1.28),clamp((dopD-1.)*1.6,0.,1.));",
+"  dc=mix(dc,dc*vec3(1.1,.72,.55),clamp((1.-dopD)*1.6,0.,1.));",
+"  float vis=p.y<0.?1.:step(1.,r);",
+"  float aD=clamp(prof*1.5,0.,.92)*vis;",
+"  col=col*(1.-aD)+dc*vis;",
+" }",
+/* anamorphic streak, cinematic glare */
+" float fl=exp(-abs(fc.y-uC.y)/1.8)*exp(-abs(p.x)/3.2)*.16*(1.+uE*1.2);",
+" col+=vec3(.95,.72,.48)*fl;",
+" col=1.-exp(-col*1.15);",
+" vec2 uv=gl_FragCoord.xy/uRes;",
+" float vg=mix(.25,1.,smoothstep(1.05,.25,length((uv-.5)*vec2(1.25,1.))));",
+" col*=vg;",
+" col+=(h21(gl_FragCoord.xy+fract(uT*7.)*91.)-.5)*.035;",
+" gl_FragColor=vec4(max(col,0.),1.);",
+"}"].join("\n");
+
+function initGL(){
+  try{
+    var g=hostCanvas.getContext("webgl",{antialias:false,alpha:false,premultipliedAlpha:false,powerPreference:"high-performance"})||hostCanvas.getContext("experimental-webgl");
+    if(!g) return false;
+    function sh(type,src){ var s=g.createShader(type); g.shaderSource(s,src); g.compileShader(s);
+      if(!g.getShaderParameter(s,g.COMPILE_STATUS)) throw new Error(g.getShaderInfoLog(s)); return s; }
+    var p=g.createProgram();
+    g.attachShader(p,sh(g.VERTEX_SHADER,VS)); g.attachShader(p,sh(g.FRAGMENT_SHADER,FS)); g.linkProgram(p);
+    if(!g.getProgramParameter(p,g.LINK_STATUS)) throw new Error(g.getProgramInfoLog(p));
+    g.useProgram(p);
+    var buf=g.createBuffer(); g.bindBuffer(g.ARRAY_BUFFER,buf);
+    g.bufferData(g.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),g.STATIC_DRAW);
+    var loc=g.getAttribLocation(p,"a"); g.enableVertexAttribArray(loc); g.vertexAttribPointer(loc,2,g.FLOAT,false,0,0);
+    ["uRes","uC","uR","uT","uPh","uE","uDpr"].forEach(function(n){ U[n]=g.getUniformLocation(p,n); });
+    gl=g; prog=p;
+    hostCanvas.addEventListener("webglcontextlost",function(e){ e.preventDefault(); toFallback(); },false);
+    return true;
+  }catch(err){ gl=null; return false; }
+}
+function toFallback(){
+  gl=null;
+  var c=document.createElement("canvas"); c.id="host"; c.setAttribute("aria-hidden","true");
+  hostCanvas.replaceWith(c); hostCanvas=c;
+  ctx2=hostCanvas.getContext("2d");
+  sizeHost();
+}
+function sizeHost(){
+  var rc=viewport.getBoundingClientRect();
+  hostW=Math.max(1,rc.width); hostH=Math.max(1,rc.height);
+  var cap = gl ? 1.5 : 2;
+  hostDpr=Math.min(window.devicePixelRatio||1,cap);
+  hostCanvas.width=Math.round(hostW*hostDpr); hostCanvas.height=Math.round(hostH*hostDpr);
+  var narrow = window.innerWidth<=860;
+  if(narrow){
+    hostCx=hostW/2; hostCy=hostH*0.5;
+    hostR=Math.min(hostW/2/4.0, hostH/5.2);
+  }else{
+    var brief=$("brief").getBoundingClientRect();
+    var leftSpace=brief.left-rc.left-24;
+    hostCx=Math.max(leftSpace*0.5, hostW*0.3);
+    hostCy=hostH*0.56;
+    hostR=Math.min(leftSpace/2/3.7, hostH/5.6, 120);
+  }
+  hostR=Math.max(hostR,30);
+  if(gl) gl.viewport(0,0,hostCanvas.width,hostCanvas.height);
+  if(ctx2) buildFallbackStars();
+}
+function buildFallbackStars(){
+  fallbackStars=[];
+  var n=Math.round(hostW*hostH/2600);
+  for(var i=0;i<n;i++) fallbackStars.push({x:Math.random()*hostW,y:Math.random()*hostH,b:Math.pow(Math.random(),2.2),w:Math.random()<.3});
+}
+function drawGL(){
+  gl.uniform2f(U.uRes,hostCanvas.width,hostCanvas.height);
+  gl.uniform2f(U.uC,hostCx,hostH-hostCy);
+  var breath = reduce ? 1 : 1+0.012*Math.sin(hostT*0.8)+0.02*energy+0.012*voice;
+  gl.uniform1f(U.uR,hostR*breath);
+  gl.uniform1f(U.uT,hostT);
+  gl.uniform1f(U.uPh,phase);
+  gl.uniform1f(U.uE,Math.min(1.6,energy+gulp));
+  gl.uniform1f(U.uDpr,hostDpr);
+  gl.drawArrays(gl.TRIANGLES,0,3);
+}
+function drawFallback(){
+  var c=ctx2, W=hostW, H=hostH, cx=hostCx, cy=hostCy;
+  var R=hostR*(reduce?1:1+0.012*Math.sin(hostT*0.8)+0.02*energy+0.012*voice);
+  var E=Math.min(1.6,energy+gulp), gain=1+0.85*E, tE=1.8;
+  c.setTransform(hostDpr,0,0,hostDpr,0,0);
+  c.globalCompositeOperation="source-over";
+  c.fillStyle="#000"; c.fillRect(0,0,W,H);
+  /* lensed stars: primary image of each source */
+  for(var i=0;i<fallbackStars.length;i++){
+    var s=fallbackStars[i];
+    var sx0=((s.x+hostT*2.2)%W+W)%W;
+    var bx=(sx0-cx)/R, by=(s.y-cy)/R, b=Math.hypot(bx,by)||1e-3;
+    var th=(b+Math.sqrt(b*b+4*tE*tE))/2;
+    if(th<1.02) continue;
+    var ix=cx+bx/b*th*R, iy=cy+by/b*th*R;
+    var mag=Math.min(4,th*th*th*th/(th*th*th*th-Math.pow(tE,4)+1e-3));
+    c.globalAlpha=Math.min(1,(.25+s.b*.9)*Math.min(mag,2.5)*.7);
+    c.fillStyle=s.w?"#cfdcf2":"#f2dcc0";
+    var sz=(s.b>0.7?1.6:1)*Math.min(2.2,Math.sqrt(mag));
+    c.fillRect(ix-sz/2,iy-sz/2,sz,sz);
+  }
+  c.globalAlpha=1;
+  c.globalCompositeOperation="lighter";
+  /* halo over the top */
+  var hg=c.createLinearGradient(cx-1.6*R,0,cx+1.6*R,0);
+  hg.addColorStop(0,"rgba(255,226,180,"+(0.75*Math.min(1,gain/1.4))+")");
+  hg.addColorStop(.5,"rgba(236,140,60,0.45)");
+  hg.addColorStop(1,"rgba(120,30,10,0.18)");
+  c.strokeStyle=hg; c.lineWidth=0.38*R;
+  c.beginPath(); c.arc(cx,cy,1.24*R,Math.PI*1.02,Math.PI*1.98); c.stroke();
+  c.lineWidth=0.14*R; c.globalAlpha=.5;
+  c.beginPath(); c.arc(cx,cy,1.12*R,Math.PI*.15,Math.PI*.85); c.stroke();
+  c.globalAlpha=1;
+  /* back half of disk */
+  function disk(clipTop){
+    c.save();
+    c.beginPath();
+    if(clipTop) c.rect(0,0,W,cy); else c.rect(0,cy,W,H-cy);
+    c.clip();
+    c.translate(cx,cy); c.scale(1,0.19);
+    var rg=c.createRadialGradient(0,0,1.2*R,0,0,4.7*R);
+    rg.addColorStop(0,"rgba(255,236,200,"+Math.min(1,.9*gain/1.3)+")");
+    rg.addColorStop(.15,"rgba(245,150,60,.85)");
+    rg.addColorStop(.5,"rgba(160,50,14,.35)");
+    rg.addColorStop(1,"rgba(60,10,0,0)");
+    c.fillStyle=rg;
+    c.beginPath(); c.arc(0,0,4.7*R,0,Math.PI*2); c.arc(0,0,1.2*R,0,Math.PI*2,true); c.fill("evenodd");
+    var lg=c.createLinearGradient(-4.7*R,0,4.7*R,0);
+    lg.addColorStop(0,"rgba(190,215,255,.35)"); lg.addColorStop(.45,"rgba(255,220,180,.12)"); lg.addColorStop(.55,"rgba(0,0,0,0)");
+    c.fillStyle=lg;
+    c.beginPath(); c.arc(0,0,4.2*R,0,Math.PI*2); c.arc(0,0,1.2*R,0,Math.PI*2,true); c.fill("evenodd");
+    c.restore();
+  }
+  disk(true);
+  c.globalCompositeOperation="source-over";
+  c.fillStyle="#000"; c.beginPath(); c.arc(cx,cy,R,0,Math.PI*2); c.fill();
+  c.globalCompositeOperation="lighter";
+  c.strokeStyle="rgba(255,222,170,"+Math.min(1,.7*gain)+")"; c.lineWidth=Math.max(1,R*0.03);
+  c.beginPath(); c.arc(cx,cy,R*1.01,0,Math.PI*2); c.stroke();
+  disk(false);
+  c.globalCompositeOperation="source-over";
+}
+
+/* ================= Orbits ================= */
+var oc=$("orbits"), bench=$("bench"), octx=oc.getContext("2d");
+var oW=0,oH=0,oDpr=1,scale=10; /* px per Rs */
+var GM=8772, CLIGHT=Math.sqrt(2*GM), CAPTURE=3, ESCAPE=160, MAXB=40, TRAIL=140;
+var bodies=[], flashes=[], eaten=0, lastBody=null, drag=null, nextId=0;
+var fieldStars=[];
+
+var sayEl=$("say"), sayT=0;
+function say(msg,force){
+  var now=performance.now();
+  if(!force && now-sayT<2200) return;
+  sayT=now;
+  sayEl.textContent=msg; sayEl.classList.remove("off");
+  clearTimeout(say.h); say.h=setTimeout(function(){ sayEl.classList.add("off"); },5200);
+}
+function escRatio(b){ var r=Math.hypot(b.x,b.y); return Math.hypot(b.vx,b.vy)/Math.sqrt(2*GM/r); }
+function sizeOrbits(){
+  var rc=bench.getBoundingClientRect();
+  oW=Math.max(1,rc.width); oH=Math.max(1,rc.height);
+  oDpr=Math.min(window.devicePixelRatio||1,2);
+  oc.width=Math.round(oW*oDpr); oc.height=Math.round(oH*oDpr);
+  scale=Math.min(oW,oH)/2/36;
+  fieldStars=[];
+  var n=Math.round(oW*oH/3000);
+  for(var i=0;i<n;i++) fieldStars.push([Math.random()*oW,Math.random()*oH,Math.random()]);
+}
+function toSim(px,py){ return {x:(px-oW/2)/scale, y:(py-oH/2)/scale}; }
+function addBody(x,y,vx,vy){
+  if(bodies.length>=MAXB){ bodies.shift(); }
+  var r=Math.hypot(x,y);
+  if(r<=CAPTURE+0.2){ say("Too close. Inside 3 Rs nothing can orbit me, so start a little farther out.",true); return null; }
+  var b={id:nextId++,x:x,y:y,vx:vx,vy:vy,ax:0,ay:0,trail:[],ang:Math.atan2(y,x),turn:0,hue:Math.random()};
+  accel(b); bodies.push(b); lastBody=b; return b;
+}
+function circular(x,y,ecc){
+  var r=Math.hypot(x,y), v=Math.sqrt(GM/r)*(ecc||1);
+  return {vx:-y/r*v, vy:x/r*v};
+}
+function accel(b){
+  var r2=b.x*b.x+b.y*b.y, r=Math.sqrt(r2), f=-GM/(r2*r);
+  b.ax=b.x*f; b.ay=b.y*f;
+}
+function seed(){
+  bodies=[]; flashes=[]; eaten=0; lastBody=null;
+  var v;
+  v=circular(0,-22,1); addBody(0,-22,v.vx,v.vy);
+  v=circular(12,0,1.22); addBody(12,0,v.vx,v.vy);
+  v=circular(-30,6,0.78); addBody(-30,6,v.vx,v.vy);
+}
+function stepOrbits(dt){
+  var sub=12, h=dt/sub;
+  for(var i=bodies.length-1;i>=0;i--){
+    var b=bodies[i], gone=false;
+    for(var s=0;s<sub;s++){
+      /* velocity Verlet */
+      b.x+=b.vx*h+0.5*b.ax*h*h; b.y+=b.vy*h+0.5*b.ay*h*h;
+      var ax=b.ax, ay=b.ay; accel(b);
+      b.vx+=0.5*(ax+b.ax)*h; b.vy+=0.5*(ay+b.ay)*h;
+      var r=Math.hypot(b.x,b.y);
+      if(r<CAPTURE){ swallow(b); gone=true; break; }
+      if(r>ESCAPE){ gone=true; break; }
+    }
+    if(gone){ bodies.splice(i,1); if(lastBody===b) lastBody=bodies[bodies.length-1]||null; continue; }
+    var a=Math.atan2(b.y,b.x), da=a-b.ang;
+    if(da>Math.PI) da-=2*Math.PI; else if(da<-Math.PI) da+=2*Math.PI;
+    b.turn+=da; b.ang=a;
+    b.trail.push(b.x,b.y); if(b.trail.length>TRAIL*2) b.trail.splice(0,2);
+  }
+  for(var j=flashes.length-1;j>=0;j--){ flashes[j].t+=dt; if(flashes[j].t>0.9) flashes.splice(j,1); }
+}
+function swallow(b){
+  eaten++; flashes.push({x:b.x,y:b.y,t:0}); gulp=Math.min(1,gulp+0.5);
+  say(eaten===1?"Gone. It crossed the innermost stable orbit and spiralled in.":"Another one past 3 Rs. That is "+eaten+" swallowed so far.");
+}
+function drawOrbits(){
+  var c=octx, W=oW, H=oH, cx=W/2, cy=H/2;
+  c.setTransform(oDpr,0,0,oDpr,0,0);
+  c.fillStyle="#000"; c.fillRect(0,0,W,H);
+  for(var i=0;i<fieldStars.length;i++){ var s=fieldStars[i]; c.fillStyle="rgba(236,229,214,"+(0.12+s[2]*0.35)+")"; c.fillRect(s[0],s[1],1,1); }
+  /* distance rings */
+  c.lineWidth=1; c.setLineDash([]);
+  c.font="11px Archivo, Arial, sans-serif"; c.fillStyle="rgba(156,147,132,.75)";
+  [10,20,30].forEach(function(rr){
+    c.strokeStyle="rgba(236,229,214,.07)"; c.beginPath(); c.arc(cx,cy,rr*scale,0,Math.PI*2); c.stroke();
+    c.fillText(rr+" Rs",cx+rr*scale*0.7071+4,cy-rr*scale*0.7071-4);
+  });
+  /* glow */
+  var g=c.createRadialGradient(cx,cy,scale,cx,cy,scale*(7+gulp*5));
+  g.addColorStop(0,"rgba(231,161,94,"+(0.35+gulp*0.4)+")"); g.addColorStop(1,"rgba(231,161,94,0)");
+  c.fillStyle=g; c.beginPath(); c.arc(cx,cy,scale*(7+gulp*5),0,Math.PI*2); c.fill();
+  c.setLineDash([4,4]);
+  c.strokeStyle="rgba(231,161,94,.8)"; c.beginPath(); c.arc(cx,cy,CAPTURE*scale,0,Math.PI*2); c.stroke();
+  c.strokeStyle="rgba(236,229,214,.4)"; c.beginPath(); c.arc(cx,cy,1.5*scale,0,Math.PI*2); c.stroke();
+  c.setLineDash([]);
+  c.fillStyle="#000"; c.strokeStyle="rgba(236,229,214,.85)";
+  c.beginPath(); c.arc(cx,cy,Math.max(2,scale),0,Math.PI*2); c.fill(); c.stroke();
+  /* trails */
+  c.lineCap="round";
+  for(var k=0;k<bodies.length;k++){
+    var b=bodies[k], t=b.trail, n=t.length/2;
+    var col=b===lastBody?"175,200,230":"236,229,214";
+    var chunk=10;
+    for(var st=0;st<n-1;st+=chunk){
+      var en=Math.min(n-1,st+chunk);
+      c.strokeStyle="rgba("+col+","+(0.05+0.6*(en/n))+")";
+      c.lineWidth=b===lastBody?1.6:1.1;
+      c.beginPath(); c.moveTo(cx+t[st*2]*scale,cy+t[st*2+1]*scale);
+      for(var q=st+1;q<=en;q++) c.lineTo(cx+t[q*2]*scale,cy+t[q*2+1]*scale);
+      c.stroke();
+    }
+    c.fillStyle=b===lastBody?"#AFC8E6":"#ECE5D6";
+    c.beginPath(); c.arc(cx+b.x*scale,cy+b.y*scale,b===lastBody?3.2:2.4,0,Math.PI*2); c.fill();
+  }
+  /* swallow flashes */
+  for(var f=0;f<flashes.length;f++){
+    var fl=flashes[f], p=fl.t/0.9;
+    c.strokeStyle="rgba(231,161,94,"+(1-p)+")"; c.lineWidth=2*(1-p)+0.5;
+    c.beginPath(); c.arc(cx+fl.x*scale,cy+fl.y*scale,4+p*26,0,Math.PI*2); c.stroke();
+    c.fillStyle="rgba(255,236,200,"+(1-p)*0.8+")";
+    c.beginPath(); c.arc(cx+fl.x*scale*(1-p),cy+fl.y*scale*(1-p),2,0,Math.PI*2); c.fill();
+  }
+  /* aim */
+  if(drag && drag.moved){
+    var sx=drag.sx, sy=drag.sy, ex=drag.ex, ey=drag.ey;
+    c.strokeStyle="rgba(175,200,230,.9)"; c.lineWidth=1.2; c.setLineDash([3,3]);
+    c.beginPath(); c.moveTo(sx,sy); c.lineTo(ex,ey); c.stroke(); c.setLineDash([]);
+    c.fillStyle="#AFC8E6"; c.beginPath(); c.arc(sx,sy,3,0,Math.PI*2); c.fill();
+    var vv=dragVel(), p0=toSim(sx,sy);
+    if(Math.hypot(p0.x,p0.y)>CAPTURE){
+      var pb={x:p0.x,y:p0.y,vx:vv.vx,vy:vv.vy,ax:0,ay:0}; accel(pb);
+      var hh=0.004; c.strokeStyle="rgba(175,200,230,.45)"; c.lineWidth=1; c.setLineDash([2,5]);
+      c.beginPath(); c.moveTo(sx,sy);
+      for(var it=0;it<900;it++){
+        pb.x+=pb.vx*hh+0.5*pb.ax*hh*hh; pb.y+=pb.vy*hh+0.5*pb.ay*hh*hh;
+        var oax=pb.ax, oay=pb.ay; accel(pb);
+        pb.vx+=0.5*(oax+pb.ax)*hh; pb.vy+=0.5*(oay+pb.ay)*hh;
+        var pr=Math.hypot(pb.x,pb.y);
+        c.lineTo(cx+pb.x*scale,cy+pb.y*scale);
+        if(pr<CAPTURE||pr>60) break;
+      }
+      c.stroke(); c.setLineDash([]);
+    }
+    c.fillStyle="rgba(236,229,214,.9)";
+    c.fillText((Math.hypot(vv.vx,vv.vy)/CLIGHT).toFixed(2)+" c",ex+8,ey-8);
+  }
+}
+function dragVel(){
+  /* drag length in Schwarzschild radii, times a gain; capped at 0.7 c */
+  var k=1.8/scale, vx=(drag.ex-drag.sx)*k, vy=(drag.ey-drag.sy)*k;
+  var sp=Math.hypot(vx,vy), mx=0.7*CLIGHT;
+  if(sp>mx){ vx*=mx/sp; vy*=mx/sp; }
+  return {vx:vx, vy:vy};
+}
+oc.addEventListener("pointerdown",function(e){
+  var rc=oc.getBoundingClientRect();
+  drag={id:e.pointerId,sx:e.clientX-rc.left,sy:e.clientY-rc.top,ex:e.clientX-rc.left,ey:e.clientY-rc.top,moved:false};
+  try{ oc.setPointerCapture(e.pointerId); }catch(_){}
+  wake();
+});
+oc.addEventListener("pointermove",function(e){
+  if(!drag||drag.id!==e.pointerId) return;
+  var rc=oc.getBoundingClientRect();
+  drag.ex=e.clientX-rc.left; drag.ey=e.clientY-rc.top;
+  if(Math.hypot(drag.ex-drag.sx,drag.ey-drag.sy)>6) drag.moved=true;
+});
+function endDrag(e){
+  if(!drag||drag.id!==e.pointerId) return;
+  var p=toSim(drag.sx,drag.sy), v;
+  if(drag.moved){ v=dragVel(); } else { v=circular(p.x,p.y,1); }
+  var nb=addBody(p.x,p.y,v.vx,v.vy);
+  if(nb){
+    if(!drag.moved) say("A circular orbit at "+Math.hypot(p.x,p.y).toFixed(0)+" Rs. Gravity and speed are exactly balanced.");
+    else { var er=escRatio(nb); say(er>=1?"That one is above escape speed. It will leave and never come back.":(er>0.85?"Barely bound. Expect a long, stretched ellipse.":"Bound. It will keep coming back around me.")); }
+  }
+  drag=null; updateReadouts();
+}
+oc.addEventListener("pointerup",endDrag);
+oc.addEventListener("pointercancel",function(){ drag=null; });
+$("add").addEventListener("click",function(){
+  var a=Math.random()*Math.PI*2, r=8+Math.random()*24, x=Math.cos(a)*r, y=Math.sin(a)*r;
+  var v=circular(x,y,0.7+Math.random()*0.55); addBody(x,y,v.vx,v.vy); updateReadouts(); wake();
+});
+$("reset").addEventListener("click",function(){ seed(); updateReadouts(); wake(); say("Back to three bodies.",true); });
+
+var rSpeed=$("r-speed"), rDist=$("r-dist"), rCount=$("r-count"), rEaten=$("r-eaten"), rLaps=$("r-laps"), rEsc=$("r-esc"), rEscL=$("r-esc-l");
+function updateReadouts(){
+  if(lastBody){
+    rSpeed.textContent=(Math.hypot(lastBody.vx,lastBody.vy)/CLIGHT).toFixed(2);
+    rDist.textContent=Math.hypot(lastBody.x,lastBody.y).toFixed(1);
+  }else{ rSpeed.textContent="0.00"; rDist.textContent="0.0"; }
+  rCount.textContent=bodies.length;
+  rEaten.textContent=eaten;
+  if(lastBody){ var er=escRatio(lastBody); rEsc.textContent=er.toFixed(2); rEscL.textContent=er>=1?"escaping":"bound"; }
+  else { rEsc.textContent="0.00"; rEscL.textContent="—"; }
+  var laps=0; for(var i=0;i<bodies.length;i++) laps+=Math.floor(Math.abs(bodies[i].turn)/(2*Math.PI));
+  rLaps.textContent=laps;
+}
+
+/* ================= Loop ================= */
+var heroOn=true, labOn=true, running=false, last=0, readoutClock=0;
+function frame(ts){
+  if(document.hidden){ running=false; return; }
+  var dt=Math.min(0.05,(ts-(last||ts))/1000); last=ts;
+  var rate=reduce?0.15:1;
+  /* host character dynamics */
+  voice*=Math.pow(0.02,dt);
+  var target=speaking?0.55+0.55*Math.min(1,voice):(reduce?0.25:0);
+  energy+=(target-energy)*Math.min(1,dt*4);
+  gulp*=Math.pow(0.15,dt);
+  hostT+=dt*rate;
+  phase+=dt*rate*(0.9+1.8*energy+1.5*gulp);
+  if(heroOn){ if(gl) drawGL(); else if(ctx2) drawFallback(); }
+  if(labOn){
+    stepOrbits(dt);
+    drawOrbits();
+    readoutClock+=dt; if(readoutClock>0.12){ readoutClock=0; updateReadouts(); }
+  }
+  if(heroOn||labOn){ requestAnimationFrame(frame); } else running=false;
+}
+function wake(){ if(!running && !document.hidden){ running=true; last=0; requestAnimationFrame(frame); } }
+document.addEventListener("visibilitychange",function(){ if(!document.hidden) wake(); });
+if("IntersectionObserver" in window){
+  new IntersectionObserver(function(es){ es.forEach(function(e){
+    if(e.target===viewport) heroOn=e.isIntersecting; else labOn=e.isIntersecting;
+  }); wake(); },{rootMargin:"60px"}).observe(viewport);
+  var io2=new IntersectionObserver(function(es){ es.forEach(function(e){ labOn=e.isIntersecting; }); wake(); },{rootMargin:"60px"});
+  io2.observe(bench);
+}
+var rsT=0;
+function onResize(){ clearTimeout(rsT); rsT=setTimeout(function(){ sizeHost(); sizeOrbits(); if(gl) drawGL(); else if(ctx2) drawFallback(); drawOrbits(); },60); }
+window.addEventListener("resize",onResize);
+if("ResizeObserver" in window){ new ResizeObserver(onResize).observe(bench); }
+
+/* boot */
+if(!initGL()){ ctx2=hostCanvas.getContext("2d"); }
+sizeHost(); sizeOrbits(); seed(); updateReadouts();
+show(0);
+if(gl) drawGL(); else if(ctx2) drawFallback();
+drawOrbits();
+wake();
+})();
+</script>

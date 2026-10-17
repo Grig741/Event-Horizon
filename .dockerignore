@@ -1,0 +1,8 @@
+.git
+__pycache__
+data
+.env
+*.db
+prototype
+founder
+deploy

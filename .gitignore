@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+data/
+.env
+*.db
+deploy/data/
+deploy/caddy/
+netlify/lib/lessons.generated.mjs
+node_modules/
+.netlify/
