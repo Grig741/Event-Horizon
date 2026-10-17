@@ -101,7 +101,7 @@ npm run deploy                   # соберёт и выложит сайт с 
 
 ```bash
 npm install && npm test          # тесты Netlify-функций (без сети, с фейковым Telegram)
-pip install -r requirements.txt  # Python-сервер
+pip install -r server/requirements.txt  # Python-сервер
 python -m server.main            # http://localhost:8080 (без BOT_TOKEN — только сайт)
 ```
 
