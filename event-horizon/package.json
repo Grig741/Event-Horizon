@@ -1,0 +1,17 @@
+{
+  "name": "event-horizon",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/embed-lessons.mjs",
+    "test": "node scripts/embed-lessons.mjs && MEMORY_BLOBS=1 node --test tests/netlify.test.mjs",
+    "deploy": "npx --yes netlify-cli@17 deploy --build --prod",
+    "env": "npx --yes netlify-cli@17 env:import .env"
+  },
+  "dependencies": {
+    "@netlify/blobs": "11.1.3"
+  }
+}

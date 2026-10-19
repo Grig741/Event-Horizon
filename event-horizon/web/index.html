@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Event Horizon</title>
+<meta name="description" content="Astronomy explained by a black hole: live space news presented by the object it's about, real planet positions and interactive lessons.">
+<meta name="theme-color" content="#000000">
+<meta property="og:title" content="Event Horizon">
+<meta property="og:description" content="Live space news, presented by a black hole. Real planets. Interactive lessons.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23000'/%3E%3Cellipse cx='32' cy='33' rx='28' ry='6' fill='%23E7A15E'/%3E%3Ccircle cx='32' cy='32' r='13' fill='%23000' stroke='%23FFE2B0' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&display=swap">
+<link rel="stylesheet" href="/css/app.css">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#today" aria-label="Event Horizon, home"><span>Event</span> <i>Horizon</i></a>
+  <nav class="tabs" aria-label="Sections" data-i18n-aria="nav.sections">
+    <a href="#today" data-tab="today"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><ellipse cx="12" cy="12" rx="10" ry="3"/></svg><span data-i18n="nav.today">Today</span></a>
+    <a href="#news" data-tab="news"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M4 10h16M4 15h10M4 20h7"/></svg><span data-i18n="nav.news">News</span></a>
+    <a href="#planets" data-tab="planets"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.5"/><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="10"/></svg><span data-i18n="nav.planets">Planets</span></a>
+    <a href="#learn" data-tab="learn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4-9 4-9-4zM7 9v6c3 2 7 2 10 0V9"/></svg><span data-i18n="nav.learn">Learn</span></a>
+    <a href="#pro" data-tab="pro" class="pro-tab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6-4.5-4.2 6.1-.7z"/></svg><span>Pro</span></a>
+  </nav>
+  <label class="lang"><span class="sr" data-i18n="nav.language">Language</span><select id="lang-select"></select></label>
+</header>
+
+<main id="main">
+  <!-- TODAY -->
+  <section class="view" data-view="today" aria-labelledby="today-h">
+    <div class="stage">
+      <div class="stage-canvas" id="today-host"></div>
+      <div class="stage-inner">
+        <div class="masthead">
+          <h1 id="today-h" class="wordmark"><span>Event</span><span>Horizon</span></h1>
+          <p class="tagline" data-i18n="hero.tagline">Today's space news, told by the thing it's about. A black hole presents black-hole news, Mars presents Mars.</p>
+        </div>
+        <article class="brief" id="brief" aria-live="off">
+          <div class="brief-head">
+            <span class="presenter"><span data-i18n="brief.presentedBy">Presented by</span> <b id="presenter">a black hole</b></span>
+            <span class="count" id="brief-count"></span>
+          </div>
+          <h2 class="story-title" id="story-title" data-i18n="brief.loading">Tuning in…</h2>
+          <p class="story-meta" id="story-meta"></p>
+          <p class="speech"><span class="ghost" id="ghost" aria-hidden="true"></span><span aria-hidden="true"><span id="typed"></span><span class="caret" id="caret"></span></span></p>
+          <p class="sr" id="speech-full" aria-live="polite"></p>
+          <p class="story-note" id="story-note" data-i18n="brief.sourceLang"></p>
+          <div class="brief-actions">
+            <a class="readmore" id="readmore" href="#" target="_blank" rel="noopener">Read the full story</a>
+            <button class="linkbtn" id="skip" type="button" data-i18n="brief.skip">Show all text</button>
+          </div>
+          <div class="controls">
+            <button class="nav" id="prev" type="button" aria-label="Previous story" data-i18n-aria="brief.prev"><svg viewBox="0 0 16 16"><path d="M10 3 5 8l5 5"/></svg></button>
+            <div class="dots" id="dots"></div>
+            <button class="nav" id="next" type="button" aria-label="Next story" data-i18n-aria="brief.next"><svg viewBox="0 0 16 16"><path d="m6 3 5 5-5 5"/></svg></button>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div class="wrap today-below">
+      <section class="tonight" aria-labelledby="tonight-h">
+        <div class="sec-head"><h2 id="tonight-h" data-i18n="tonight.title">Tonight's sky</h2><a href="#planets" class="more" data-i18n="tonight.all">All planets</a></div>
+        <ul class="tonight-list" id="tonight-list"></ul>
+        <p class="fine" id="moon-line"></p>
+      </section>
+      <section class="apod" id="apod" aria-labelledby="apod-h" hidden>
+        <div class="sec-head"><h2 id="apod-h" data-i18n="apod.title">NASA picture of the day</h2></div>
+        <a class="apod-card" id="apod-link" target="_blank" rel="noopener">
+          <img id="apod-img" alt="" loading="lazy">
+          <span class="apod-text"><b id="apod-title"></b><span id="apod-credit"></span></span>
+        </a>
+      </section>
+    </div>
+  </section>
+
+  <!-- NEWS -->
+  <section class="view wrap" data-view="news" aria-labelledby="news-h" hidden>
+    <div class="page-head">
+      <h1 id="news-h" data-i18n="news.title">News</h1>
+      <p data-i18n="news.lede">Live from the Spaceflight News API. Tap a story and its host will tell it.</p>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Filter by topic" data-i18n-aria="news.filter"></div>
+    <ol class="feed" id="feed"></ol>
+    <div class="feed-foot" id="feed-foot"></div>
+  </section>
+
+  <!-- PLANETS -->
+  <section class="view wrap" data-view="planets" aria-labelledby="planets-h" hidden>
+    <div class="page-head">
+      <h1 id="planets-h" data-i18n="planets.title">Planets, right now</h1>
+      <p data-i18n="planets.lede">Real positions, computed in your browser from NASA JPL orbital elements. Distances from the Sun are drawn on a square-root scale so Neptune still fits.</p>
+    </div>
+    <div class="orrery-grid">
+      <div class="orrery-box">
+        <canvas id="orrery" data-i18n-aria="planets.canvas" aria-label="Map of the Solar System seen from above. Select a planet to see its details."></canvas>
+        <div class="timebar">
+          <button class="btn small" id="t-today" type="button" data-i18n="planets.today">Today</button>
+          <input type="range" id="t-slider" min="-730" max="730" value="0" step="1" aria-label="Days from today" data-i18n-aria="planets.days">
+          <button class="btn small" id="t-play" type="button" aria-pressed="false" data-i18n="planets.play">Play</button>
+          <output id="t-date" for="t-slider"></output>
+        </div>
+      </div>
+      <aside class="planet-card" id="planet-card" aria-live="polite">
+        <div class="planet-host" id="planet-host"></div>
+        <h2 id="pc-name">Mars</h2>
+        <p class="pc-where" id="pc-where"></p>
+        <dl class="pc-facts" id="pc-facts"></dl>
+        <p class="pc-note" id="pc-note"></p>
+      </aside>
+    </div>
+    <div class="planet-pick" id="planet-pick" role="group" aria-label="Choose a planet" data-i18n-aria="planets.choose"></div>
+  </section>
+
+  <!-- LEARN -->
+  <section class="view wrap" data-view="learn" aria-labelledby="learn-h" hidden>
+    <div class="page-head" id="learn-head">
+      <h1 id="learn-h" data-i18n="learn.title">Learn by playing</h1>
+      <p data-i18n="learn.lede">Each lesson is a small working model of the real physics. Move things and watch what happens.</p>
+    </div>
+    <div class="lessons" id="lessons"></div>
+    <div class="lesson" id="lesson" hidden>
+      <button class="linkbtn back" id="lesson-back" type="button" data-i18n="learn.back">← All lessons</button>
+      <div id="lesson-body"></div>
+    </div>
+  </section>
+
+  <!-- PRO -->
+  <section class="view wrap" data-view="pro" aria-labelledby="pro-h" hidden>
+    <div class="pro">
+      <h1 id="pro-h">Event Horizon <i>Pro</i></h1>
+      <p class="pro-lede" data-i18n="pro.lede">Space news every morning, told by the right host, and every lesson unlocked.</p>
+      <ul class="pro-list">
+        <li data-i18n-html="pro.li1"><b>Morning digest in Telegram.</b> The day's top stories and tonight's sky, before breakfast.</li>
+        <li data-i18n-html="pro.li2"><b>The full news archive.</b> Free shows the latest 24 stories.</li>
+        <li data-i18n-html="pro.li3"><b>Every Pro lesson.</b> Kepler's laws and the true scale of the Solar System, with more on the way.</li>
+      </ul>
+      <div class="pro-buy" id="pro-buy">
+        <p class="price" id="price-line">$4.99</p>
+        <button class="btn primary big" id="buy" type="button" data-i18n="pro.buy">Subscribe in Telegram</button>
+        <p class="fine" id="pro-hint"></p>
+      </div>
+      <p class="pro-status" id="pro-status" hidden></p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot wrap">
+  <p data-i18n-html="foot">News via the <a href="https://spaceflightnewsapi.net" target="_blank" rel="noopener">Spaceflight News API</a>; picture of the day by <a href="https://apod.nasa.gov" target="_blank" rel="noopener">NASA APOD</a>. Planet positions from JPL orbital elements. Hosts are illustrations, not photographs.</p>
+</footer>
+
+<div class="toast" id="toast" role="status" hidden></div>
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>
