@@ -119,7 +119,7 @@ async def send_pro_offer(m: Message, bot: Bot):
         "⭐ <b>Event Horizon Pro</b>\n\n"
         "• A morning digest of the day's space news, presented by the right host\n"
         "• The full news archive on the site\n"
-        "• All Pro lessons: Kepler's laws, the true scale of the Solar System\n\n"
+        "• All Pro lessons: Kepler's laws, the true scale of the Solar System, time near a black hole, the expanding universe\n\n"
         "Paid with Telegram Stars. Renews every 30 days, cancel any time.\n"
         "By paying you accept the /terms.",
         reply_markup=kb,

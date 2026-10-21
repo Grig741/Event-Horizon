@@ -76,6 +76,7 @@ test("config and apod are public; secrets are not in responses", async () => {
 
 test("lessons and invoices are gated", async () => {
   assert.equal((await get("/api/lesson/kepler.js")).status, 402);
+  for (const id of ["horizon", "expansion"]) assert.equal((await get(`/api/lesson/${id}.js`, U)).status, 402);
   assert.equal((await get("/api/lesson/kepler.js", U)).status, 402);
   assert.equal((await get("/api/lesson/..%2Fsecret.js", U)).status, 404);
   assert.equal((await post("/api/invoice")).status, 401);
@@ -106,6 +107,7 @@ test("payment flow: pre-checkout, pay once, duplicates ignored, Pro unlocked, re
   assert.equal(me.pro, true); assert.equal(me.pro_until, exp);
   const lesson = await get("/api/lesson/kepler.js", U);
   assert.equal(lesson.status, 200); assert.match(await lesson.text(), /Kepler/);
+  for (const id of ["horizon", "expansion"]) assert.equal((await get(`/api/lesson/${id}.js`, U)).status, 200);
   const deep = await (await get("/api/news?limit=12&offset=18", U)).json();
   assert.equal(deep.locked, false); assert.equal(deep.items.length, 12);
 

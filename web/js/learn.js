@@ -2,7 +2,10 @@ import { api, bus, state, toast } from "./api.js";
 import { lang, t } from "./i18n.js";
 
 const $ = id => document.getElementById(id);
-const LESSONS = [{ id: "orbits", pro: false }, { id: "kepler", pro: true }, { id: "scale", pro: true }];
+const LESSONS = [
+  { id: "orbits", pro: false }, { id: "phases", pro: false }, { id: "gravity", pro: false },
+  { id: "kepler", pro: true }, { id: "scale", pro: true }, { id: "horizon", pro: true }, { id: "expansion", pro: true },
+];
 
 function preview(canvas, id) {
   const dpr = Math.min(devicePixelRatio || 1, 2), W = canvas.clientWidth || 300, H = 150;
@@ -24,6 +27,37 @@ function preview(canvas, id) {
       c.closePath(); c.fillStyle = k % 2 ? "rgba(175,200,230,.16)" : "rgba(231,161,94,.22)"; c.fill();
     }
     c.fillStyle = "#ffd28a"; c.beginPath(); c.arc(fx, cy, 5, 0, Math.PI * 2); c.fill();
+  } else if (id === "phases") {
+    const n = 5, r = 13, gap = (W - 40) / (n - 1);
+    for (let k = 0; k < n; k++) { // new → crescent → quarter → gibbous → full
+      const x = 20 + k * gap, th = k / (n - 1) * Math.PI, cs = Math.cos(th);
+      c.fillStyle = "#1a1712"; c.beginPath(); c.arc(x, cy, r, 0, Math.PI * 2); c.fill();
+      c.save(); c.beginPath(); c.arc(x, cy, r, 0, Math.PI * 2); c.clip(); c.fillStyle = "#e9e2d0";
+      c.beginPath(); c.arc(x, cy, r, -Math.PI / 2, Math.PI / 2); c.closePath(); c.fill();
+      c.fillStyle = cs > 0 ? "#1a1712" : "#e9e2d0"; c.beginPath(); c.ellipse(x, cy, Math.max(0.01, r * Math.abs(cs)), r, 0, 0, Math.PI * 2); c.fill(); c.restore();
+    }
+  } else if (id === "gravity") {
+    c.fillStyle = "rgba(236,229,214,.08)"; c.fillRect(0, H - 22, W, 22);
+    [[W * 0.3, 0.9, "#5b8ed6"], [W * 0.7, 0.2, "#cfc8b8"]].forEach(([x, h, col]) => {
+      c.strokeStyle = col; c.lineWidth = 2; c.beginPath(); c.moveTo(x - W * 0.18, H - 22); c.lineTo(x + W * 0.18, H - 22); c.stroke();
+      const y = H - 22 - (1 - h) * 90; c.strokeStyle = "rgba(231,161,94,.5)"; c.setLineDash([3, 4]); c.lineWidth = 1;
+      c.beginPath(); c.moveTo(x, H - 26); c.lineTo(x, y + 14); c.stroke(); c.setLineDash([]);
+      c.fillStyle = "#ece5d6"; c.beginPath(); c.arc(x, y, 5, 0, Math.PI * 2); c.fill(); c.fillRect(x - 1, y + 5, 2, 10);
+    });
+  } else if (id === "horizon") {
+    const bx = W * 0.3, g = c.createRadialGradient(bx, cy, 18, bx, cy, 48); g.addColorStop(0, "rgba(231,161,94,.45)"); g.addColorStop(1, "rgba(231,161,94,0)");
+    c.fillStyle = g; c.beginPath(); c.arc(bx, cy, 48, 0, Math.PI * 2); c.fill();
+    c.fillStyle = "#000"; c.strokeStyle = "#e7a15e"; c.beginPath(); c.arc(bx, cy, 18, 0, Math.PI * 2); c.fill(); c.stroke();
+    let x = bx + 34, w = 5;
+    for (let k = 0; k < 7 && x < W - 10; k++) { c.strokeStyle = ["#7fd36b", "#c9d84d", "#f0c040", "#f08a30", "#e04a2a", "#a02a20", "#601a18"][k]; c.beginPath(); c.arc(x, cy, 14, -0.6, 0.6); c.stroke(); x += w; w *= 1.6; }
+  } else if (id === "expansion") {
+    let s = 3; const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+    for (let k = 0; k < 26; k++) {
+      const x = rnd() * W, y = rnd() * H, dx = (x - cx) * 0.18, dy = (y - cy) * 0.18;
+      c.strokeStyle = "rgba(231,161,94,.5)"; c.beginPath(); c.moveTo(x, y); c.lineTo(x + dx, y + dy); c.stroke();
+      c.fillStyle = "#afc8e6"; c.beginPath(); c.ellipse(x, y, 3, 1.4, k, 0, Math.PI * 2); c.fill();
+    }
+    c.strokeStyle = "#e7a15e"; c.beginPath(); c.arc(cx, cy, 6, 0, Math.PI * 2); c.stroke();
   } else {
     c.fillStyle = "#ffd28a"; c.beginPath(); c.arc(16, cy, 10, 0, Math.PI * 2); c.fill();
     [[0.387, "#a99f97"], [0.723, "#e8cf9a"], [1, "#5b8ed6"], [1.524, "#d0643a"]].forEach(([a, col]) => {
