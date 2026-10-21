@@ -9,7 +9,7 @@
 | **Today** | Ведущий печатает свежую новость, сам меняется под тему. Ниже — что видно на небе сегодня и фото дня NASA | Spaceflight News API, NASA APOD, расчёт орбит |
 | **News** | Лента с фильтрами по темам. Тап по карточке — ведущий рассказывает её | Spaceflight News API (обновление каждые 15 мин) |
 | **Planets** | Реальные положения планет сейчас и ±2 года, расстояние до Земли, время света, видимость | Орбитальные элементы JPL (проверено по противостояниям Марса 2025, Юпитера 2024, Сатурна 2025) |
-| **Learn** | Бесплатно: Orbits, Phases of the Moon, Gravity on other worlds. Pro: Kepler's laws, The true scale, Near the horizon, The expanding universe | Свои симуляции |
+| **Learn** | Orbits — бесплатно. Kepler's laws и The true scale — Pro | Свои симуляции |
 | **Pro** | Подписка за Telegram Stars, 30 дней с автопродлением | Telegram Payments |
 
 Бот: `/start`, `/news`, `/sky`, `/pro`, `/status`, `/digest`, `/lang`, `/paysupport`, `/terms`. Язык бота берётся из Telegram, `/lang` меняет его; на сайте — переключатель в шапке. Тексты новостей остаются на языке источника (английском). Для админа: `/stats`, `/refund <charge_id>`.
