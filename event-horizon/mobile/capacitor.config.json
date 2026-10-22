@@ -1,0 +1,12 @@
+{
+  "appId": "space.eventhorizon.app",
+  "appName": "Event Horizon",
+  "webDir": "www",
+  "backgroundColor": "#000000",
+  "android": { "backgroundColor": "#000000" },
+  "ios": { "backgroundColor": "#000000", "contentInset": "never" },
+  "plugins": {
+    "SplashScreen": { "launchAutoHide": false, "backgroundColor": "#000000", "showSpinner": false },
+    "StatusBar": { "style": "DARK", "backgroundColor": "#000000", "overlaysWebView": true }
+  }
+}

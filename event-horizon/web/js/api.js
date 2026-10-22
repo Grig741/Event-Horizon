@@ -1,6 +1,11 @@
 import { fmtDate, t } from "./i18n.js";
 // Talks to our server. Inside Telegram, every request carries the signed initData so the server knows who you are.
 export const tg = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData ? window.Telegram.WebApp : null;
+// Native app (Android/iOS, Capacitor): the pages are bundled inside the app and the API lives on the website.
+// No payments inside the app (App Store / Google Play rules): Pro stays in Telegram and on the site.
+export const native = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+const BASE = native ? String(window.EH_API || "").replace(/\/+$/, "") : "";
+if (native) document.documentElement.classList.add("native");
 
 export const state = { user: null, pro: false, proUntil: 0, price: "$4.99", bot: "" };
 export const bus = new EventTarget();
@@ -8,7 +13,7 @@ export const bus = new EventTarget();
 async function req(path, { method = "GET", as = "json" } = {}) {
   const headers = {};
   if (tg) headers["X-Telegram-Init-Data"] = tg.initData;
-  const r = await fetch(path, { method, headers, cache: "no-store" });
+  const r = await fetch(BASE + path, { method, headers, cache: "no-store" });
   if (!r.ok) {
     const err = new Error((await r.text().catch(() => "")) || r.statusText);
     err.status = r.status;

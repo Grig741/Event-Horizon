@@ -8,7 +8,22 @@ import { LESSONS } from "../lib/lessons.generated.mjs";
 const json = (o, status = 200, headers = {}) => Response.json(o, { status, headers: { "Cache-Control": "no-store", ...headers } });
 const text = (t, status) => new Response(t, { status, headers: { "Content-Type": "text/plain; charset=utf-8" } });
 
+// The Android/iOS app runs from these local origins and calls the API cross-origin.
+const APP_ORIGINS = new Set(["capacitor://localhost", "https://localhost", "http://localhost"]);
+
 export default async (req) => {
+  const origin = req.headers.get("origin") || "";
+  if (!APP_ORIGINS.has(origin)) return handle(req);
+  const cors = { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, X-Telegram-Init-Data", "Access-Control-Max-Age": "86400", "Vary": "Origin" };
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
+  const res = await handle(req);
+  const out = new Response(res.body, res);
+  for (const [k, v] of Object.entries(cors)) out.headers.set(k, v);
+  return out;
+};
+
+async function handle(req) {
   const url = new URL(req.url);
   const path = url.pathname.replace(/\/+$/, "");
   const user = verifyInitData(req.headers.get("x-telegram-init-data"));
@@ -49,6 +64,6 @@ export default async (req) => {
 
   if (path === "/api/health") return json({ ok: true });
   return text("Not found", 404);
-};
+}
 
 export const config = { path: "/api/*" };

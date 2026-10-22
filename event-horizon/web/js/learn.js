@@ -1,4 +1,4 @@
-import { api, bus, state, toast } from "./api.js";
+import { api, bus, native, state, toast } from "./api.js";
 import { lang, t } from "./i18n.js";
 
 const $ = id => document.getElementById(id);
@@ -78,6 +78,7 @@ export class Learn {
   renderList() {
     const box = $("lessons"); box.innerHTML = "";
     for (const l of LESSONS) {
+      if (native && l.pro && !state.pro) continue;
       const locked = l.pro && !state.pro;
       const b = document.createElement("button");
       b.type = "button"; b.className = "lesson-card";

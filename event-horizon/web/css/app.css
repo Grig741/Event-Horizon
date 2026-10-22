@@ -251,3 +251,8 @@ body.tg .brand { display: none }
 
 .dots { flex-wrap: nowrap; overflow: hidden; min-width: 0 }
 .dot { width: 20px; flex: none }
+
+/* Native app (Android/iOS): no Pro purchase inside the app, feel like an app, not a page */
+.native .pro-tab { display: none }
+.native body { overscroll-behavior: none; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none }
+.native .speech, .native .story-title, .native p { -webkit-user-select: text; user-select: text }

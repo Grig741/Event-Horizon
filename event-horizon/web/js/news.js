@@ -1,4 +1,4 @@
-import { api, bus, state, timeAgo } from "./api.js";
+import { api, bus, native, state, timeAgo } from "./api.js";
 import { HOSTS } from "./host.js";
 import { lang, t } from "./i18n.js";
 
@@ -53,7 +53,7 @@ export class News {
       this.offset += res.items.length;
       foot.innerHTML = "";
       if (!this.offset) foot.innerHTML = `<p class="fine">${t("news.empty")}</p>`;
-      if (res.locked) foot.appendChild(this.lockedBox());
+      if (res.locked) { if (!native) foot.appendChild(this.lockedBox()); }
       else if (res.items.length === PAGE) {
         const b = document.createElement("button");
         b.className = "btn"; b.type = "button"; b.textContent = t("news.more");

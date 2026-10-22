@@ -1,4 +1,4 @@
-import { api, bus, refreshMe, state, tg, toast } from "./api.js";
+import { api, bus, native, refreshMe, state, tg, toast } from "./api.js";
 import { Today } from "./today.js";
 import { News } from "./news.js";
 import { Planets } from "./planets.js";
@@ -17,7 +17,8 @@ let current = "";
 
 function route() {
   const [name, sub] = (location.hash.replace("#", "") || "today").split("/");
-  const key = ["today", "news", "planets", "learn", "pro"].includes(name) ? name : "today";
+  let key = ["today", "news", "planets", "learn", "pro"].includes(name) ? name : "today";
+  if (native && key === "pro") key = "today";
   document.querySelectorAll(".view").forEach(v => { v.hidden = v.dataset.view !== key; });
   document.querySelectorAll(".tabs a").forEach(a => a.setAttribute("aria-current", a.dataset.tab === key ? "page" : "false"));
   if (current !== key) {
@@ -75,6 +76,19 @@ function langSwitcher() {
   });
 }
 
+// Android back button and status bar in the native app
+function nativeShell() {
+  const P = window.Capacitor.Plugins || {};
+  P.App?.addListener("backButton", () => {
+    const [name, sub] = location.hash.replace("#", "").split("/");
+    if (name === "learn" && sub) location.hash = "#learn";
+    else if (name && name !== "today") location.hash = "#today";
+    else P.App.exitApp();
+  });
+  try { P.StatusBar?.setStyle({ style: "DARK" }); P.StatusBar?.setBackgroundColor({ color: "#000000" }); } catch { /* iOS has no color */ }
+  P.SplashScreen?.hide();
+}
+
 async function boot() {
   applyStatic();
   langSwitcher();
@@ -86,6 +100,7 @@ async function boot() {
   views.pro = Pro;
   Pro.init();
   if (tg) tg.BackButton.onClick(() => { location.hash = "#learn"; });
+  if (native) nativeShell();
   addEventListener("hashchange", route);
   route();
   await refreshMe();
