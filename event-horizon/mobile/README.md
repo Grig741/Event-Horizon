@@ -6,13 +6,13 @@
 
 Впиши адрес сайта в `app.config.json`:
 ```json
-{ "api": "https://<твой-сайт>.netlify.app" }
+{ "api": "https://eventt-horizon.netlify.app" }
 ```
 API уже разрешает запросы из приложения (CORS для `capacitor://localhost` и `https://localhost`). Задеплой сайт после этой правки, иначе приложение не получит новости.
 
 ## Android
 
-**Без Android Studio (через GitHub):** Settings → Secrets and variables → Actions → Variables → `EH_API` = адрес сайта. Каждый пуш в `event-horizon/web` или `event-horizon/mobile` собирает APK: Actions → последний запуск → Artifacts → `event-horizon-apk`. Скачай, перекинь на телефон, установи.
+**Без Android Studio (через GitHub):** Settings → Secrets and variables → Actions → Variables → `EH_API` = `https://eventt-horizon.netlify.app` (необязательно — по умолчанию берётся из `app.config.json`). Каждый пуш в `event-horizon/web` или `event-horizon/mobile` собирает APK: Actions → последний запуск → Artifacts → `event-horizon-apk`. Скачай, перекинь на телефон, установи.
 
 **С Android Studio:**
 ```bash
