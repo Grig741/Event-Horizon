@@ -205,6 +205,7 @@ const D = {
   "toast.payErr": ["Could not start the payment. Try again.", "Не удалось начать оплату. Попробуйте снова.", "Չհաջողվեց սկսել վճարումը։ Փորձեք նորից։", "No se pudo iniciar el pago. Inténtalo de nuevo."],
   "toast.noBot": ["The Telegram bot is not configured yet.", "Telegram-бот ещё не настроен.", "Telegram բոտը դեռ կարգավորված չէ։", "El bot de Telegram aún no está configurado."],
 
+  "foot.privacy": ["Privacy policy", "Политика конфиденциальности", "Գաղտնիության քաղաքականություն", "Política de privacidad"],
   "foot": [
     'News via the <a href="https://spaceflightnewsapi.net" target="_blank" rel="noopener">Spaceflight News API</a>; picture of the day by <a href="https://apod.nasa.gov" target="_blank" rel="noopener">NASA APOD</a>. Planet positions from JPL orbital elements. Hosts are illustrations, not photographs.',
     'Новости: <a href="https://spaceflightnewsapi.net" target="_blank" rel="noopener">Spaceflight News API</a>; фото дня: <a href="https://apod.nasa.gov" target="_blank" rel="noopener">NASA APOD</a>. Положения планет по орбитальным элементам JPL. Ведущие — иллюстрации, а не фотографии.',

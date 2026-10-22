@@ -20,7 +20,15 @@ cd event-horizon/mobile
 npm install
 npm run android        # соберёт www/, синхронизирует и откроет проект в Android Studio
 ```
-Для Google Play: Build → Generate Signed App Bundle (.aab). Ключ (`.jks`) храни отдельно, без него обновления не выпустить. Аккаунт разработчика Google Play — $25 один раз.
+## Google Play
+
+1. Один раз добавь 4 секрета с ключом загрузки: Settings → Secrets and variables → Actions → New repository secret (`ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`).
+2. Actions → **Android release (Google Play)** → Run workflow → впиши версию (1.0.0, 1.0.1…).
+3. Через ~5 минут: запуск → Artifacts → `event-horizon-aab` → `app-release.aab` загружаешь в Play Console.
+
+Номер сборки (versionCode) растёт сам с каждым запуском. При первой загрузке оставь включённым Play App Signing: Google хранит основной ключ, а наш — только ключ загрузки, его можно сбросить через поддержку, если потеряешь.
+
+Тексты карточки на 4 языках, ответы на анкеты и графика — в `store/`. Аккаунт разработчика — $25 один раз.
 
 ## iOS
 

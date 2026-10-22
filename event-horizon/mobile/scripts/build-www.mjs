@@ -18,6 +18,8 @@ cpSync(src, out, { recursive: true });
 const indexUrl = new URL("index.html", out);
 let html = readFileSync(indexUrl, "utf8");
 html = html
+  // the privacy policy opens on the website (system browser), not inside the app
+  .replace(/href="\/privacy\.html"/g, `href="${api}/privacy.html" target="_blank" rel="noopener"`)
   // the Telegram Mini App script is useless in the app and slows the start
   .replace(/\s*<script src="https:\/\/telegram\.org\/js\/telegram-web-app\.js"><\/script>/, "")
   // absolute paths ("/css/app.css") → relative, so they resolve inside the app bundle
