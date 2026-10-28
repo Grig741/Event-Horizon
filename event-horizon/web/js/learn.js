@@ -3,9 +3,17 @@ import { lang, t } from "./i18n.js";
 
 const $ = id => document.getElementById(id);
 const LESSONS = [
-  { id: "orbits", pro: false }, { id: "phases", pro: false }, { id: "gravity", pro: false },
-  { id: "kepler", pro: true }, { id: "scale", pro: true }, { id: "horizon", pro: true }, { id: "expansion", pro: true },
+  { id: "orbits", pro: false }, { id: "phases", pro: false }, { id: "gravity", pro: false }, { id: "seasons", pro: false }, { id: "cannon", pro: false },
+  { id: "kepler", pro: true }, { id: "scale", pro: true }, { id: "horizon", pro: true }, { id: "expansion", pro: true }, { id: "stars", pro: true }, { id: "transits", pro: true },
 ];
+const FILTERS = ["all", "free", "pro", "new"];
+
+// progress lives in this browser only; storage can be blocked, so every access is guarded
+const store = {
+  get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* storage blocked */ } },
+};
+const done = () => new Set(store.get("eh-done", []));
 
 function preview(canvas, id) {
   const dpr = Math.min(devicePixelRatio || 1, 2), W = canvas.clientWidth || 300, H = 150;
@@ -58,6 +66,38 @@ function preview(canvas, id) {
       c.fillStyle = "#afc8e6"; c.beginPath(); c.ellipse(x, y, 3, 1.4, k, 0, Math.PI * 2); c.fill();
     }
     c.strokeStyle = "#e7a15e"; c.beginPath(); c.arc(cx, cy, 6, 0, Math.PI * 2); c.stroke();
+  } else if (id === "seasons") {
+    const g = c.createRadialGradient(cx, cy, 0, cx, cy, 20); g.addColorStop(0, "#fff3d0"); g.addColorStop(0.4, "rgba(255,190,90,.9)"); g.addColorStop(1, "rgba(255,150,50,0)");
+    c.strokeStyle = "rgba(236,229,214,.2)"; c.setLineDash([3, 5]); c.beginPath(); c.ellipse(cx, cy, W * 0.38, 34, 0, 0, Math.PI * 2); c.stroke(); c.setLineDash([]);
+    c.fillStyle = g; c.beginPath(); c.arc(cx, cy, 20, 0, Math.PI * 2); c.fill();
+    for (const [x, a] of [[cx - W * 0.38, 0], [cx + W * 0.38, Math.PI]]) {
+      c.fillStyle = "#0f1f38"; c.beginPath(); c.arc(x, cy, 11, 0, Math.PI * 2); c.fill();
+      c.fillStyle = "#5b8ed6"; c.beginPath(); c.arc(x, cy, 11, a - Math.PI / 2, a + Math.PI / 2); c.fill();
+      c.strokeStyle = "#ece5d6"; c.beginPath(); c.moveTo(x - 7, cy + 17); c.lineTo(x + 7, cy - 17); c.stroke();
+    }
+  } else if (id === "cannon") {
+    const ey = H + 120, r = 175;
+    c.fillStyle = "#173058"; c.beginPath(); c.arc(cx, ey, r, 0, Math.PI * 2); c.fill();
+    c.strokeStyle = "#9c9384"; c.lineWidth = 2; c.beginPath(); c.moveTo(cx, ey - r); c.lineTo(cx, ey - r - 22); c.stroke(); c.lineWidth = 1.5;
+    [[120, "#e7a15e"], [200, "#afc8e6"], [240, "#e8cf9a"]].forEach(([d, col]) => {
+      c.strokeStyle = col; c.beginPath(); c.moveTo(cx, ey - r - 22);
+      c.quadraticCurveTo(cx + d * 0.6, ey - r - 30, cx + d, d > 220 ? ey - r - 10 : ey - Math.sqrt(Math.max(0, r * r - d * d)));
+      c.stroke();
+    });
+    c.lineWidth = 1;
+  } else if (id === "stars") {
+    [[0.18, 9, [165, 190, 255]], [0.42, 14, [255, 244, 225]], [0.7, 26, [255, 160, 90]]].forEach(([fx, r, col]) => {
+      const x = W * fx, g = c.createRadialGradient(x, cy, 0, x, cy, r * 1.8);
+      g.addColorStop(0, "#fff"); g.addColorStop(0.45, `rgb(${col})`); g.addColorStop(1, `rgba(${col},0)`);
+      c.fillStyle = g; c.beginPath(); c.arc(x, cy, r * 1.8, 0, Math.PI * 2); c.fill();
+    });
+    c.fillStyle = "#eef3ff"; c.beginPath(); c.arc(W * 0.9, cy, 2.5, 0, Math.PI * 2); c.fill();
+  } else if (id === "transits") {
+    const sx = cx, sy = cy - 22, g = c.createRadialGradient(sx, sy, 0, sx, sy, 40); g.addColorStop(0, "#fff8e8"); g.addColorStop(0.7, "#ffd9a0"); g.addColorStop(1, "rgba(255,190,110,0)");
+    c.fillStyle = g; c.beginPath(); c.arc(sx, sy, 40, 0, Math.PI * 2); c.fill();
+    c.fillStyle = "#050403"; c.beginPath(); c.arc(sx + 6, sy + 4, 7, 0, Math.PI * 2); c.fill();
+    c.strokeStyle = "#afc8e6"; c.lineWidth = 1.5; c.beginPath(); c.moveTo(20, H - 30);
+    c.lineTo(cx - 34, H - 30); c.lineTo(cx - 24, H - 16); c.lineTo(cx + 24, H - 16); c.lineTo(cx + 34, H - 30); c.lineTo(W - 20, H - 30); c.stroke(); c.lineWidth = 1;
   } else {
     c.fillStyle = "#ffd28a"; c.beginPath(); c.arc(16, cy, 10, 0, Math.PI * 2); c.fill();
     [[0.387, "#a99f97"], [0.723, "#e8cf9a"], [1, "#5b8ed6"], [1.524, "#d0643a"]].forEach(([a, col]) => {
@@ -71,18 +111,40 @@ function preview(canvas, id) {
 export class Learn {
   constructor() {
     this.current = null; this.rendered = false;
+    this.filter = store.get("eh-filter", "all"); if (!FILTERS.includes(this.filter)) this.filter = "all";
     $("lesson-back").addEventListener("click", () => { location.hash = "#learn"; });
     bus.addEventListener("me", () => this.renderList());
   }
 
+  renderBar() {
+    const bar = $("learn-bar"), seen = done(), n = LESSONS.filter(l => seen.has(l.id)).length;
+    const lastId = store.get("eh-last", null), lastL = LESSONS.find(l => l.id === lastId);
+    bar.innerHTML = `<div class="chips" role="group" aria-label="${t("learn.filter")}">
+        ${FILTERS.map(f => `<button type="button" class="chip" data-f="${f}" aria-pressed="${f === this.filter}">${t("learn.f." + f)}</button>`).join("")}
+      </div>
+      <div class="progress">
+        <div class="progress-text"><span>${n === LESSONS.length ? t("learn.allDone") : t("learn.progress", { n, total: LESSONS.length })}</span>
+          ${lastL && !(lastL.pro && !state.pro) ? `<a class="linkbtn" href="#learn/${lastL.id}">${t("learn.continue", { title: t("l." + lastL.id) })}</a>` : ""}</div>
+        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${LESSONS.length}" aria-valuenow="${n}"><span style="width:${n / LESSONS.length * 100}%"></span></div>
+      </div>`;
+    bar.querySelectorAll("[data-f]").forEach(b => b.addEventListener("click", () => {
+      this.filter = b.dataset.f; store.set("eh-filter", this.filter); this.renderList();
+    }));
+  }
+
   renderList() {
+    this.renderBar();
     const box = $("lessons"); box.innerHTML = "";
-    for (const l of LESSONS) {
+    const seen = done();
+    const list = LESSONS.filter(l => this.filter === "all" || (this.filter === "free" && !l.pro) || (this.filter === "pro" && l.pro) || (this.filter === "new" && !seen.has(l.id)));
+    if (!list.length) box.innerHTML = `<p class="note empty">${t("learn.none")}</p>`;
+    for (const l of list) {
       const locked = l.pro && !state.pro;
       const b = document.createElement("button");
-      b.type = "button"; b.className = "lesson-card";
+      b.type = "button"; b.className = "lesson-card" + (seen.has(l.id) ? " is-done" : "");
       b.innerHTML = `<canvas aria-hidden="true"></canvas><span class="body">
-        <span class="badge ${l.pro ? "is-pro" : ""}">${l.pro ? (locked ? t("learn.pro") : t("learn.unlocked")) : t("learn.free")}</span>
+        <span class="tags"><span class="badge ${l.pro ? "is-pro" : ""}">${l.pro ? (locked ? t("learn.pro") : t("learn.unlocked")) : t("learn.free")}</span>
+        ${seen.has(l.id) ? `<span class="badge is-done">✓ ${t("learn.done")}</span>` : ""}</span>
         <h3>${t("l." + l.id)}</h3><p>${t("l." + l.id + ".b")}</p></span>`;
       b.addEventListener("click", () => { location.hash = `#learn/${l.id}`; });
       box.appendChild(b);
@@ -96,8 +158,9 @@ export class Learn {
     if (!this.rendered) this.renderList();
     this.close();
     const l = LESSONS.find(x => x.id === sub);
-    $("lessons").hidden = !!l; $("learn-head").hidden = !!l; $("lesson").hidden = !l;
-    if (!l) return;
+    $("lessons").hidden = !!l; $("learn-head").hidden = !!l; $("learn-bar").hidden = !!l; $("lesson").hidden = !l;
+    if (!l) { this.renderBar(); return; }
+    this.renderNav(l);
     const body = $("lesson-body");
     body.innerHTML = '<div class="skeleton"></div>';
     try {
@@ -111,11 +174,19 @@ export class Learn {
       }
       if (location.hash !== `#learn/${l.id}`) return; // the user moved on while it loaded
       this.current = mod.mount(body, { lang });
+      const seen = done(); seen.add(l.id); store.set("eh-done", [...seen]); store.set("eh-last", l.id);
     } catch (e) {
       if (e.status === 402 || e.status === 401) return this.locked(body, l);
       body.innerHTML = `<p class="fine">${t("learn.fail")}</p>`;
       toast(t("learn.failToast"));
     }
+  }
+
+  renderNav(l) {
+    const i = LESSONS.indexOf(l), prev = LESSONS[i - 1], next = LESSONS[i + 1];
+    const link = (x, cls, key) => x ? `<a class="lesson-step ${cls}" href="#learn/${x.id}"><small>${t(key)}${x.pro && !state.pro ? " · Pro" : ""}</small><span>${t("l." + x.id)}</span></a>` : "<span></span>";
+    $("lesson-nav").innerHTML = link(prev, "prev", "learn.prev") + link(next, "next", "learn.next");
+    window.scrollTo({ top: 0 });
   }
 
   locked(body, l) {

@@ -190,6 +190,24 @@ body.tg .brand { display: none }
 .badge { justify-self: start; font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; padding: 3px 7px; border: 1px solid var(--hair); color: var(--dim) }
 .badge.is-pro { color: var(--ember); border-color: var(--ember) }
 .lesson { padding-bottom: 48px }
+.learn-bar { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 340px); gap: 12px 32px; align-items: end; margin-bottom: 18px }
+.learn-bar .chips { margin-bottom: 0 }
+.progress { display: grid; gap: 8px; font-size: .8125rem; color: var(--dim) }
+.progress-text { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline }
+.progress-text .linkbtn { color: var(--blue); padding: 0 }
+.progress-bar { height: 3px; background: var(--hair) }
+.progress-bar span { display: block; height: 100%; background: var(--ember); transition: width .6s ease }
+.lesson-card .tags { display: flex; gap: 6px; flex-wrap: wrap }
+.badge.is-done { color: var(--blue); border-color: rgba(175, 200, 230, .4) }
+.lesson-card.is-done canvas { opacity: .8 }
+.lessons .empty { grid-column: 1 / -1; padding: 24px 0 }
+.lesson-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 40px; border-top: 1px solid var(--hair); padding-top: 18px }
+.lesson-step { display: grid; gap: 2px; text-decoration: none; padding: 12px 14px; border: 1px solid var(--hair); min-width: 0 }
+.lesson-step:hover { border-color: var(--ink) }
+.lesson-step small { color: var(--dim); font-size: .75rem }
+.lesson-step span { font-family: var(--f-display); font-size: 1.25rem; line-height: 1.1; overflow-wrap: anywhere }
+.lesson-step.next { text-align: right }
+@media (max-width: 700px) { .learn-bar { grid-template-columns: minmax(0, 1fr) } .lesson-step span { font-size: 1.05rem } }
 .lesson .back { margin-bottom: 8px }
 /* shared lesson layout, used by every lesson module */
 .lab { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 300px); gap: 24px 32px; align-items: start }
