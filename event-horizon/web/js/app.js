@@ -18,6 +18,7 @@ let current = "";
 function route() {
   const [name, sub] = (location.hash.replace("#", "") || "today").split("/");
   const key = ["today", "news", "planets", "learn", "pro"].includes(name) ? name : "today";
+  if (key === "pro" && document.documentElement.classList.contains("twa")) { location.replace("#today"); return; }
   document.querySelectorAll(".view").forEach(v => { v.hidden = v.dataset.view !== key; });
   document.querySelectorAll(".tabs a").forEach(a => a.setAttribute("aria-current", a.dataset.tab === key ? "page" : "false"));
   if (current !== key) {

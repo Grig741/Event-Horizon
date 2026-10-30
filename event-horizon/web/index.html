@@ -14,6 +14,20 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&display=swap">
 <link rel="stylesheet" href="/css/app.css">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<script>
+/* Inside the Google Play app (Trusted Web Activity) hide Pro purchase: Play requires its own billing for digital subscriptions. */
+(function () {
+  try {
+    if (document.referrer.indexOf("android-app://") === 0) sessionStorage.setItem("eh-twa", "1");
+    if (/[?&]source=twa(&|$)/.test(location.search)) sessionStorage.setItem("eh-twa", "1");
+    if (sessionStorage.getItem("eh-twa") === "1") document.documentElement.classList.add("twa");
+  } catch (e) {}
+})();
+if ("serviceWorker" in navigator) addEventListener("load", function () { navigator.serviceWorker.register("/sw.js").catch(function () {}); });
+</script>
+<style>.twa .tabs .pro-tab, .twa [data-view="pro"], .twa a[href="#pro"] { display: none !important }</style>
 </head>
 <body>
 <header class="topbar">
